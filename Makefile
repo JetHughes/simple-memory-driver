@@ -13,7 +13,6 @@ program:
 	gcc -w -Wall -pedantic store.c -o store-prog
 
 install:
-	sudo rmmod memdrv
 	sudo insmod memdrv.ko
 	sudo chown mal:mal /dev/memdrv
 	lsmod | grep memdrv
