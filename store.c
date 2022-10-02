@@ -1,6 +1,7 @@
 #include "libmemdrv.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "findsize.c"
 
 // for debugging
 void printArgs(int argc, char *argv[]){
@@ -18,8 +19,15 @@ int main(int argc, char *argv[]){
     }
     printArgs(argc, argv); //for debugging
     if(argc == 3){
-        if(argv[2] == '-r'){
+        if(argv[2] == "-r"){
             //set random
         }
     }    
+    int size = findSize(argv[1]);
+    printf("size of %s: %d\n", argv[1], size); //for debugging
+    
+    if(size > 4864){
+        fprintf(stderr, "truncated\n");
+    }
+
 }
