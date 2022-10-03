@@ -37,4 +37,5 @@ My dog (gitlab) ate my devlog, so this is my best recreation
 - 6:15 GitLab eats my dev log and makefile
 - 6:20 Cry a little bit
 - 6:40 Back up everything and try to reclone and repush my stuff
+- 7:00 (Hopefully) Successfully pushed to git
 
