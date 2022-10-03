@@ -7,10 +7,13 @@ PWD	:= $(shell pwd)
 
 CFLAGS := -W -Wall -pedantic -g
 
-all: module store debug
+all: module store retrieve-prog debug
 
 store:
 	gcc -w -Wall -pedantic store.c -o store-prog
+
+retrieve-prog: retrieve.c libmemdrv.c libmemdrv.h
+	gcc -O2 -w -Wall -o retrieve-prog retrieve.c libmemdrv.c 
 
 test: 
 	./store-prog testdata.txt
