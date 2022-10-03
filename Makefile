@@ -48,3 +48,4 @@ clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
 	rm -f debug
 	rm -f store-prog
+	rm -f retrieve-prog
