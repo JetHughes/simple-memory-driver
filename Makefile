@@ -7,18 +7,21 @@ PWD	:= $(shell pwd)
 
 CFLAGS := -W -Wall -pedantic -g
 
-all: module program debug
+all: module store debug
 
-program:
+store:
 	gcc -w -Wall -pedantic store.c -o store-prog
 
-install:
+test: 
+	./store-prog testdata.txt
+
+ins:
 	sudo insmod memdrv.ko
 	sudo chown mal:mal /dev/memdrv
 	lsmod | grep memdrv
 	ls -l /dev/memdrv
 
-uninstall:
+rm:
 	sudo rmmod memdrv
 
 module:
