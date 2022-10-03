@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "fs.h"
 #include "libmemdrv.c"
 #include "findsize.c"
@@ -14,28 +15,20 @@ void printArgs(int argc, char *argv[]){
 }
 
 void store(char filename[]){    
-
     printf("Storing %s\n", filename);
-    printf("\nconsts\ndevice: %s\nBlock size; %d\nMax Bid: %d\nDevice Size: %d\n", 
-        DEVICE, BLOCK_SIZE, MAX_BID, DEVICE_SIZE); //for debugging
-
-    Inode inode;
-
-    //test store const in block 1
-    open_device();    
     
+    // Open File
     FILE* fp = fopen(filename, "r");  
-    // checking if the file exist or not
     if (fp == NULL) {
         printf("File Not Found!\n");
         return -1;
     }
 
+    // Split into blocks
     char blocks[MAX_BID][BLOCK_SIZE];
-
-    char c = fgetc(fp);
     int block_count = 0;
-    while (c != EOF)
+    char c = fgetc(fp);
+    while (c != EOF && block_count < MAX_BID)
     {
         for (int i = 0; i < BLOCK_SIZE && c != EOF; i++)
         {
@@ -46,19 +39,29 @@ void store(char filename[]){
         lseek(fp, BLOCK_SIZE, SEEK_CUR);
     }
 
-    printf("\nReached end of file\n");
+    printf("\nReached end of file, %d blocks created\n", block_count);
+
+    // Write to Memory
+    // Inode inode;
+    // inode.size = block_count * BLOCK_SIZE;
+    // inode.addrs
+    open_device();
     for (int i = 0; i < block_count; i++)
     {
-        printf("block %d: ", i);
-        for (int j = 0; j < BLOCK_SIZE; j++)
-        {
-            printf("%c", blocks[i][j]);
-        }
-        printf("\n");
-    }
+        write_block(i+1, blocks[i]);        
+    } 
     return;
 }
 
+    // for (int i = 0; i < block_count; i++)
+    // {
+    //     printf("block %d: ", i);
+    //     for (int j = 0; j < BLOCK_SIZE; j++)
+    //     {
+    //         printf("%c", blocks[i][j]);
+    //     }
+    //     printf("\n");
+    // }
 int main(int argc, char *argv[]){
     if(argc <2){
         printf("Usage: %s <file> [OPTION]\n", argv[0]);
