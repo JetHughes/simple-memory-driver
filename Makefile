@@ -13,7 +13,18 @@ store:
 	gcc -w -Wall -pedantic store.c -o store-prog
 
 test: 
+	make store
+	make rm
+	make ins
 	./store-prog testdata.txt
+	./debug
+
+testr:
+	make store
+	make rm
+	make ins
+	./store-prog testdata.txt -r
+	./debug
 
 ins:
 	sudo insmod memdrv.ko
