@@ -11,7 +11,8 @@
     - clean store prog
     - install module
     - uninstall module
-
+- 10:52 successfully used sample programs to store and retrieve a file
+- 2:41 Read file and converted to a set of 64 byte blocks
 
 
 ## Will Devlog
