@@ -20,9 +20,11 @@ char oneline[BLOCK_SIZE];
 
 
 //SOURCE: https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
-//from user 
 
 // This method checks if a file exists.  Returns true if it does
+
+//Params: filename - name of the file to be checked if exists
+//Return: a boolean, true if file exists, false if not
 
 bool file_exists(char * filename) {
   struct stat buffer;
@@ -32,6 +34,13 @@ bool file_exists(char * filename) {
 //This method takes a block number, block size, file descriptor and a buffer
 //It will read the data from the block number into the buffer
 //and then write that to the file descriptor
+
+//Params: block_number - The block number to be read from
+//         block_size - The size of the block (in bytes)
+//        file_descriptor - The destination of the data read from the block
+//        buf - A buffer to hold the data between read and write
+//Return: an integer indicating success (0) or failure (<0)
+
 int block_writer(int block_number, int block_size, int file_descriptor, char buf[]){
     if(block_number == 0){
         //printf("UH OH: block number = 0 \n");
@@ -49,9 +58,10 @@ int block_writer(int block_number, int block_size, int file_descriptor, char buf
     return(0);
 }
 
-//This method retrieves the data specified my the inode
-//name of new file (if needed)
-// create is a boolean. 1 for default, 0 for creating a newfile
+//This method retrieves the data specified by the inode
+//Params: name - name of file to be written to
+//        create - a boolean. 1 for default, 0 for creating a newfile
+//Return: an integer indicating success (0) or failure (<0)
 int retrieve(char * name, int create) {
   int filedesc;
   //check if it exists
@@ -129,6 +139,10 @@ int retrieve(char * name, int create) {
   exit(1);
 }
 
+//Main function
+//Params: argc - number of arguments
+//        argv[] - array of given arguments
+//Return: an integer indicating success (0) or failure (<0)
 int main(int argc, char * argv[]) {
   //inappropriate arguments  
   if (argc > 2) {
