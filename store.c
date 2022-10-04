@@ -61,7 +61,8 @@ void store(char filename[], int doShuffle){
     int8_t indirect_block[BLOCK_SIZE];
 
     char buf[BLOCK_SIZE];
-    int block_count, char_count = 0;
+    int block_count = 0;
+    int char_count = 0;
     int fp = open(filename, O_RDONLY);
 
     open_device();
@@ -79,17 +80,13 @@ void store(char filename[], int doShuffle){
         inode.size += char_count;
 
         if(block_count < NDIRECT){
-            printf("inode.addrs[%d] = %d", block_count, free_list[block_count]);
             inode.addrs[block_count] = free_list[block_count];
             write_block(free_list[block_count], buf);
         } else if(block_count == NDIRECT){
-            printf("inode.addrs[%d] = %d", block_count, free_list[block_count]);
-            printf("indirect_block[0] = %d", block_count, free_list[block_count+1]);
             inode.addrs[block_count] = free_list[block_count];
             indirect_block[0] = free_list[block_count+1];
             write_block(free_list[block_count+1], buf);
         } else {            
-            printf("indirect_block[%d] = %d", block_count-NDIRECT, free_list[block_count+1]);
             indirect_block[block_count-NDIRECT] = free_list[block_count+1];
             write_block(free_list[block_count+1], buf);
         }
