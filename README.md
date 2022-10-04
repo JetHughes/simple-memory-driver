@@ -24,6 +24,7 @@
 - 2:27 Finshed cleaning up code
 - 2:38 Added some extra comments
 - 10:31 Found weird bug where first address is always 0 wills VM but works fine on my VM
+- 10:41 Realised my store was showing the wrong size on truncated files. and fixed it
 
 ## Will Devlog
 

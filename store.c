@@ -91,7 +91,7 @@ void store(char filename[], int doShuffle){
         }
 
         block_count++;
-    } while (char_count == 64 && block_count<MAX_BID);
+    } while (char_count == 64 && block_count<MAX_BID-2);
 
     write_block(0, (char*) &inode);
     write_block(free_list[NDIRECT], indirect_block);
