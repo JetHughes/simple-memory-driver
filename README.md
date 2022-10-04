@@ -16,6 +16,12 @@
 - 2:53 Can write blocks to memory. Need to implement indirect indexing
 - 3:53 Indirect indexing done. Need to do random allocation
 - 5:30 Random allocation done 
+4/10
+- 10:13 Starting to fix issue with extra characters at end of file
+- 10:46 Fixed. Now need to fix issue with nulls in output from retrieve
+- 12:14 Rewrote store using a better method. I had previously used FILE, fgetc(), and lseek to read chars individually. I changed it to use the open and read system calls reading the file one block at a time, and writing to memdrv as blocks are read. I just need to clean up the code and do some tests
+- 1:31 Fixed small issue with garbage data in indirect index block
+- 2:27 Finshed cleaning up code
 
 ## Will Devlog
 
