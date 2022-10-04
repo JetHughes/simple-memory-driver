@@ -1,5 +1,13 @@
 # Assignment 2
 
+Jet
+Usefullness: 50
+Effort: 50
+
+Will
+Usefullness: 50
+Effort: 50
+
 ## Jet Devlog
 
 30/09 - Have been very busy, Starting today.
