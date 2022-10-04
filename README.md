@@ -39,3 +39,6 @@ My dog (gitlab) ate my devlog, so this is my best recreation
 - 6:40 Back up everything and try to reclone and repush my stuff
 - 7:00 (Hopefully) Successfully pushed to git
 
+4/10
+- Updated code comments
+
