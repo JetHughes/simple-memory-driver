@@ -51,4 +51,6 @@ My dog (gitlab) ate my devlog, so this is my best recreation
 
 4/10
 - Updated code comments
+- Fixed file content not being over written
+- Helped bug fix weird bug
 
