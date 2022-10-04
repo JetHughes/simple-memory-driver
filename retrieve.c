@@ -62,9 +62,16 @@ int retrieve(char * name, int create) {
     printf("%s already exists.  Would you like to overwrite (y/n)?\n", name);
     scanf("%s", & overwrite);
     printf("You entered %c\n", overwrite);
-    if (overwrite == 'n') {
+    if (overwrite != 'y') {
       printf("Exiting program");
       exit(1);
+    } else {
+      int res = remove(name);
+      //printf("removing file %s", name);
+      if(res < 0){
+        perror("remove");
+        exit(1);
+      }
     }
   }
 
