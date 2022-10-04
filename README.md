@@ -23,6 +23,7 @@
 - 1:31 Fixed small issue with garbage data in indirect index block
 - 2:27 Finshed cleaning up code
 - 2:38 Added some extra comments
+- 10:31 Found weird bug where first address is always 0 wills VM but works fine on my VM
 
 ## Will Devlog
 
