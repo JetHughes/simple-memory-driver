@@ -22,6 +22,7 @@
 - 12:14 Rewrote store using a better method. I had previously used FILE, fgetc(), and lseek to read chars individually. I changed it to use the open and read system calls reading the file one block at a time, and writing to memdrv as blocks are read. I just need to clean up the code and do some tests
 - 1:31 Fixed small issue with garbage data in indirect index block
 - 2:27 Finshed cleaning up code
+- 2:38 Added some extra comments
 
 ## Will Devlog
 

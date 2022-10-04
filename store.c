@@ -70,7 +70,7 @@ void store(char filename[], int doShuffle){
 
     for (int i = 0; i < MAX_BID; i++)
         free_list[i] = i+1;    
-        
+
     if(doShuffle == SHUFFLE)
         shuffle(free_list, MAX_BID);
 
@@ -101,17 +101,20 @@ void store(char filename[], int doShuffle){
     return;
 }
 
+/* C program to save a file to the dev/memdrv 
+ * block device using indexed allocation
+ */
 int main(int argc, char *argv[]){
-    switch (argc){
-        case 2:
+    switch (argc){        
+        case 2: // Args were just a file name, store without shuffling
             store(argv[1], NOSHUFFLE); 
             break;
-        case 3:
+        case 3: // 3 Args found, if 3rd arg is "-r" store using randomlyt ordered blocks
             if(argv[2][0] == '-' && argv[2][1] == 'r')
                 store(argv[1], SHUFFLE);     
             break;
 
-        default:
+        default: // Invalid args
             printf("Usage: %s <file> [-r]\n", argv[0]);
     }
 }
