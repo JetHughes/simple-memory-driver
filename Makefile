@@ -7,35 +7,21 @@ PWD	:= $(shell pwd)
 
 CFLAGS := -W -Wall -pedantic -g
 
-all: module store retrieve-prog debug
+all: module store-prog retrieve-prog debug
 
-store:
-	gcc -w -Wall -pedantic store.c -o store-prog
+store-prog:
+	gcc -w -Wall -o store-prog store.c
 
-retrieve-prog: retrieve.c libmemdrv.c libmemdrv.h
-	gcc -O2 -w -Wall -o retrieve-prog retrieve.c libmemdrv.c 
+retrieve-prog:
+	gcc -w -Wall -o retrieve-prog retrieve.c libmemdrv.c 
 
-test: 
-	make store
-	make rm
-	make ins
-	./store-prog testdata.txt
-	./debug
-
-testr:
-	make store
-	make rm
-	make ins
-	./store-prog testdata.txt -r
-	./debug
-
-ins:
+install:
 	sudo insmod memdrv.ko
 	sudo chown mal:mal /dev/memdrv
 	lsmod | grep memdrv
 	ls -l /dev/memdrv
 
-rm:
+remove:
 	sudo rmmod memdrv
 
 module:
