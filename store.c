@@ -1,19 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include "fs.h"
 #include "libmemdrv.c"
-#include "findsize.c"
+
+#define SHUFFLE 1
+#define NOSHUFFLE 0
 
 static int8_t free_list[MAX_BID];
-
-void printArgs(int argc, char *argv[]){
-    printf("argc: %d\n", argc);
-    for (int i = 0; i < argc; i++)
-    {
-        printf("argc %d: %s\n", i, argv[i]);
-    }
-}
 
 void shuffle(int8_t *array, int n) {
     for (int i = 0; i < n - 1; i++) {
@@ -24,113 +19,99 @@ void shuffle(int8_t *array, int n) {
     }
 }
 
-void store(char filename[]){    
-    printf("Storing %s\n", filename);
-    
-    // Open File
+/* Function to check if a file exists
+ * and if it does calculate its size
+ * 
+ * Params: filename - the name of the file to check
+ * 
+ * Return: An integer indicating the size of the file or (-1) for no file 
+ */
+int checkFile(char filename[])
+{
     FILE* fp = fopen(filename, "r");  
-    if (fp == NULL) {
-        printf("File Not Found!\n");
-        return -1;
+    if (fp == NULL)
+        return -1;    
+    
+    fseek(fp, 0, SEEK_END);
+    int length = ftell(fp);
+
+    fclose(fp);  
+    return length;
+}
+
+/* Function to save a given file to the memdrv 
+ * device using indexed allocation
+ * 
+ * Params: filename - The name of the file to save
+ *         doShuffle - boolean indicating the use of random allocation.
+ */
+void store(char filename[], int doShuffle){    
+    int size = checkFile(filename);
+    if(size == -1){
+        fprintf(stderr, "File Not Found!\n");
+        exit(EXIT_FAILURE);
+    } else if(size == 0){
+        fprintf(stderr, "Empty File!\n");
+        exit(EXIT_FAILURE);
+    } else if(size > 4864){
+        fprintf(stderr, "Truncated\n");
     }
 
-    // Split into blocks
-    char blocks[MAX_BID][BLOCK_SIZE];
-    int block_count = 0;
-    char c = fgetc(fp);
-    while (c != EOF && block_count < MAX_BID)
-    {
-        for (int i = 0; i < BLOCK_SIZE && c != EOF; i++)
-        {
-            blocks[block_count][i] = c;
-            c = fgetc(fp);  
-        }
-        block_count ++;
-        lseek(fp, BLOCK_SIZE, SEEK_CUR);
-    }
+    Inode inode;    
+    int8_t indirect_block[BLOCK_SIZE];
 
-    printf("Reached end of file, %d blocks created\n", block_count);
-
-    // Write to Memory
-
-    // Create Inode
-    Inode inode;
-    inode.size = block_count * BLOCK_SIZE;
-
-    for (int i = 0; i < block_count && i <= NDIRECT; i++)
-    {
-        inode.addrs[i] = free_list[i]+1;
-    }
-
-    int8_t indirect_block[BLOCK_SIZE];  
-    if(block_count > NDIRECT){
-        for (int i = 0; i < MAX_BID-NDIRECT; i++)
-        {
-            if(i<block_count-NDIRECT){
-                indirect_block[i] = free_list[i+14]+1;
-            } else {
-                indirect_block[i] = 0;
-            }
-        }
-    }
+    char buf[BLOCK_SIZE];
+    int block_count, char_count = 0;
+    int fp = open(filename, O_RDONLY);
 
     open_device();
-    // Write inode
-    printf("Write Inode");
-    write_block(0, (char*) &inode);
+    memset(indirect_block, 0, BLOCK_SIZE);
+    memset(&inode, 0, sizeof(Inode));
 
-    printf("\nFree List: ");
     for (int i = 0; i < MAX_BID; i++)
-    {
-        printf("%d, ", free_list[i]);
-    }    
+        free_list[i] = i+1;    
+        
+    if(doShuffle == SHUFFLE)
+        shuffle(free_list, MAX_BID);
 
-    // write direct blocks    
-    for (int i = 0; i <= NDIRECT && i < block_count; i++)
-    {
-        write_block(free_list[i]+1, blocks[i]);        
-    }
+    do {
+        char_count = read(fp, buf, BLOCK_SIZE);
+        inode.size += char_count;
 
-    // write indirect blocks
-    if(block_count > NDIRECT){
-        write_block(free_list[NDIRECT]+1, indirect_block);
-        for (int i = NDIRECT; i <= block_count; i++)
-        {
-            write_block(free_list[i+1]+1, blocks[i]);
-        }        
-    }
+        if(block_count < NDIRECT){
+            inode.addrs[block_count] = free_list[block_count];
+            write_block(free_list[block_count], buf);
+        } else if(block_count == NDIRECT){
+            inode.addrs[block_count] = free_list[block_count];
+            indirect_block[0] = free_list[block_count+1];
+            write_block(free_list[block_count+1], buf);
+        } else {            
+            indirect_block[block_count-NDIRECT] = free_list[block_count+1];
+            write_block(free_list[block_count+1], buf);
+        }
 
+        block_count++;
+    } while (char_count == 64 && block_count<MAX_BID);
+
+    write_block(0, (char*) &inode);
+    write_block(free_list[NDIRECT], indirect_block);
+
+    printf("File stored, %d blocks created\n", block_count-1);
     close_device();
     return;
 }
 
 int main(int argc, char *argv[]){
-    if(argc <2){
-        printf("Usage: %s <file> [OPTION]\n", argv[0]);
-        exit(0);
+    switch (argc){
+        case 2:
+            store(argv[1], NOSHUFFLE); 
+            break;
+        case 3:
+            if(argv[2][0] == '-' && argv[2][1] == 'r')
+                store(argv[1], SHUFFLE);     
+            break;
+
+        default:
+            printf("Usage: %s <file> [-r]\n", argv[0]);
     }
-
-    // printArgs(argc, argv);
-
-    // init free_list
-    for (int i = 0; i < MAX_BID; i++)
-    {
-        free_list[i] = i;
-    }
-    if(argc == 3){
-        if(argv[2][1] == 'r' && argv[2][0] == '-'){
-            printf("shuffle");
-            shuffle(free_list, MAX_BID);  
-        }
-    }    
-
-    // check size
-    int size = findSize(argv[1]);
-    printf("\nsize of %s: %d\n", argv[1], size);
-    if(size > 4864){
-        fprintf(stderr, "truncated\n");
-    }
-
-    // Store file
-    store(argv[1]);
 }
