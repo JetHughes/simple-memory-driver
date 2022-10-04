@@ -109,7 +109,7 @@ int main(int argc, char *argv[]){
         case 2: // Args were just a file name, store without shuffling
             store(argv[1], NOSHUFFLE); 
             break;
-        case 3: // 3 Args found, if 3rd arg is "-r" store using randomlyt ordered blocks
+        case 3: // 3 Args found, if 3rd arg is "-r" store using randomly ordered blocks
             if(argv[2][0] == '-' && argv[2][1] == 'r')
                 store(argv[1], SHUFFLE);     
             break;
