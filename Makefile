@@ -9,11 +9,11 @@ CFLAGS := -W -Wall -pedantic -g
 
 all: module store-prog retrieve-prog debug
 
-store-prog:
-	gcc -w -Wall -o store-prog store.c
+store-prog: store.c libmemdrv.c libmemdrv.h
+	gcc $(CFLAGS) -o store-prog store.c libmemdrv.c
 
-retrieve-prog:
-	gcc -w -Wall -o retrieve-prog retrieve.c libmemdrv.c 
+retrieve-prog: retrieve.c libmemdrv.c libmemdrv.h
+	gcc $(CFLAGS) -o retrieve-prog retrieve.c libmemdrv.c
 
 install:
 	sudo insmod memdrv.ko

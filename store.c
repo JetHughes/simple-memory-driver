@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
 #include "fs.h"
-#include "libmemdrv.c"
+#include "libmemdrv.h"
 
 #define SHUFFLE 1
 #define NOSHUFFLE 0
@@ -83,6 +87,8 @@ void store(char filename[], int doShuffle){
             inode.addrs[block_count] = free_list[block_count];
             write_block(free_list[block_count], buf);
         } else if(block_count == NDIRECT){
+            printf("inode.addrs[%d] = %d\n", block_count, free_list[block_count]);
+            printf("indirect_block[0] = %d\n", free_list[block_count+1]);
             inode.addrs[block_count] = free_list[block_count];
             indirect_block[0] = free_list[block_count+1];
             write_block(free_list[block_count+1], buf);
@@ -95,7 +101,7 @@ void store(char filename[], int doShuffle){
     } while (char_count == 64 && block_count<MAX_BID-2);
 
     write_block(0, (char*) &inode);
-    write_block(free_list[NDIRECT], indirect_block);
+    write_block(free_list[NDIRECT], (char*) indirect_block);
 
     printf("File stored, %d blocks created\n", block_count-1);
     close_device();

@@ -1,23 +1,14 @@
-#include "libmemdrv.h"
-
 #include <stdio.h>
-
 #include <stdlib.h>
-
-#include "fs.h"
-
 #include <sys/stat.h>
-
 #include <stdbool.h>
-
 #include <unistd.h>
-
 #include <fcntl.h>
+#include "libmemdrv.h"
+#include "fs.h"
 
 char buf[BLOCK_SIZE];
 char oneline[BLOCK_SIZE];
-
-
 
 //SOURCE: https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
 
